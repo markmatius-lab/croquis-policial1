@@ -1,0 +1,25 @@
+import { ICONS, type SvgIconDef } from '@/icons';
+
+export interface PaletteFolder {
+  name: string;
+  category: 'vehicle' | 'sign' | 'element';
+  items: SvgIconDef[];
+}
+
+export const FOLDERS: PaletteFolder[] = [
+  {
+    name: 'Vehicles',
+    category: 'vehicle',
+    items: ICONS.filter((i) => i.category === 'vehicle'),
+  },
+  {
+    name: 'Senyalització',
+    category: 'sign',
+    items: ICONS.filter((i) => i.category === 'sign'),
+  },
+  {
+    name: 'Elements',
+    category: 'element',
+    items: ICONS.filter((i) => i.category === 'element'),
+  },
+];

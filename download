@@ -1,0 +1,96 @@
+import type { ReportData } from '@/types';
+import { MapPin, Calendar, Clock, Shield, FileText, BadgeCheck, type LucideIcon } from 'lucide-react';
+
+interface Props {
+  report: ReportData;
+  setReport: (r: ReportData) => void;
+}
+
+function Field({
+  label,
+  icon: Icon,
+  children,
+}: {
+  label: string;
+  icon: LucideIcon;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="block">
+      <span className="mb-1 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-slate-600">
+        <Icon size={13} className="text-slate-400" />
+        {label}
+      </span>
+      {children}
+    </label>
+  );
+}
+
+const inputCls =
+  'w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 shadow-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-200';
+
+export default function ReportForm({ report, setReport }: Props) {
+  const upd = (patch: Partial<ReportData>) => setReport({ ...report, ...patch });
+
+  return (
+    <div className="flex flex-col gap-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
+      <h2 className="text-sm font-bold uppercase tracking-wide text-slate-700">Dades de l'informe</h2>
+
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Field label="Ubicació" icon={MapPin}>
+          <input
+            className={inputCls}
+            value={report.location}
+            onChange={(e) => upd({ location: e.target.value })}
+            placeholder="Carrer, número, ciutat"
+          />
+        </Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label="Dia" icon={Calendar}>
+            <input
+              type="date"
+              className={inputCls}
+              value={report.date}
+              onChange={(e) => upd({ date: e.target.value })}
+            />
+          </Field>
+          <Field label="Hora" icon={Clock}>
+            <input
+              type="time"
+              className={inputCls}
+              value={report.time}
+              onChange={(e) => upd({ time: e.target.value })}
+            />
+          </Field>
+        </div>
+      </div>
+
+      <Field label="Policia" icon={Shield}>
+        <input
+          className={inputCls}
+          value={report.police}
+          onChange={(e) => upd({ police: e.target.value })}
+          placeholder="Policia Local de ___ / Guàrdia Civil / Mossos d'Esquadra..."
+        />
+      </Field>
+
+      <Field label="Explicació de l'accident" icon={FileText}>
+        <textarea
+          className={`${inputCls} min-h-[120px] resize-y`}
+          value={report.explanation}
+          onChange={(e) => upd({ explanation: e.target.value })}
+          placeholder="Descriu la dinàmica de l'accident, vehicles implicats, ferits, circumstàncies..."
+        />
+      </Field>
+
+      <Field label="TIP dels agents actuants" icon={BadgeCheck}>
+        <textarea
+          className={`${inputCls} min-h-[70px] resize-y`}
+          value={report.tip}
+          onChange={(e) => upd({ tip: e.target.value })}
+          placeholder="Nom i TIP de cada agent..."
+        />
+      </Field>
+    </div>
+  );
+}

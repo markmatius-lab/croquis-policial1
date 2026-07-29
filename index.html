@@ -1,0 +1,83 @@
+import { useState } from 'react';
+import { FileDown, Car } from 'lucide-react';
+import CanvasEditor from '@/components/CanvasEditor';
+import ReportForm from '@/components/ReportForm';
+import { generatePdf } from '@/utils/pdf';
+import type { SceneElement, ReportData } from '@/types';
+
+export default function App() {
+  const [elements, setElements] = useState<SceneElement[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [bgImage, setBgImage] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
+  const [report, setReport] = useState<ReportData>({
+    location: '',
+    date: '',
+    time: '',
+    police: '',
+    explanation: '',
+    tip: '',
+  });
+
+  const handlePdf = async () => {
+    setGenerating(true);
+    try {
+      await generatePdf(elements, bgImage, report);
+    } catch (e) {
+      console.error(e);
+      alert('No s\'ha pogut generar el PDF. Revisa les dades i torna-ho a provar.');
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100">
+      {/* Header */}
+      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-800 text-white">
+              <Car size={20} />
+            </div>
+            <div>
+              <h1 className="text-base font-bold leading-tight text-slate-800">Croquis d'accident</h1>
+              <p className="text-xs text-slate-500">Eina de confecció d'informes policials</p>
+            </div>
+          </div>
+          <button
+            onClick={handlePdf}
+            disabled={generating}
+            className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <FileDown size={18} />
+            {generating ? 'Generant...' : 'Generar i descarregar PDF'}
+          </button>
+        </div>
+      </header>
+
+      {/* Main */}
+      <main className="mx-auto max-w-6xl px-4 py-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]">
+          <div className="order-2 lg:order-1">
+            <CanvasEditor
+              elements={elements}
+              setElements={setElements}
+              selectedId={selectedId}
+              setSelectedId={setSelectedId}
+              bgImage={bgImage}
+              setBgImage={setBgImage}
+            />
+          </div>
+          <div className="order-1 lg:order-2">
+            <ReportForm report={report} setReport={setReport} />
+          </div>
+        </div>
+      </main>
+
+      <footer className="border-t border-slate-200 py-4 text-center text-xs text-slate-400">
+        Eina de croquis policial · Les dades es processen localment al navegador
+      </footer>
+    </div>
+  );
+}
